@@ -55,13 +55,14 @@ args = parser.parse_args()
 # output_folder = args.output
 
 dataset = 'tumble_1'
-image_folder = f"D:\github\Online_Tournament\my_dataset\{dataset}"
-output_folder = f"D:\github\Online_Tournament\my_dataset\{dataset}\images_rename"
-os.mkdir(output_folder)
+image_folder = f"D:\github\Online_Tournament\photo\prop"
+output_folder = f"D:\github\Online_Tournament\photo\prop\images_rename"
+if(os.path.exists(output_folder) == False):
+    os.mkdir(output_folder)
 
 number_list = set_name_start()
-number_list['tumble'] = 0
-change_label = 'tumble'
+number_list['prop'] = 605
+change_label = 'prop'
 
 for f in os.listdir(image_folder):
     if(f.endswith((".jpg"))):
@@ -78,8 +79,8 @@ for f in os.listdir(image_folder):
         if(f.endswith(".jpg")):
             number_list[label] += 1
 
-os.rename(image_folder, f"D:\github\Online_Tournament\my_dataset\{dataset}\images_yuan")
-os.rename(output_folder, f"D:\github\Online_Tournament\my_dataset\{dataset}\images")
+# os.rename(image_folder, f"D:\github\Online_Tournament\my_dataset\{dataset}\images_yuan")
+# os.rename(output_folder, f"D:\github\Online_Tournament\my_dataset\{dataset}\images")
 print()
 print(f"重命名的文件已全部保存至{output_folder}")
 

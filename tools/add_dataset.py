@@ -377,7 +377,7 @@ if __name__ == '__main__':
     result_path = args.output
 
     # 只要改这3个
-    dataset = 'good_v4_bomb'
+    dataset = 'patient2233'
     model_name = 'yv982'
 
     # 将图像路径写入 all.txt

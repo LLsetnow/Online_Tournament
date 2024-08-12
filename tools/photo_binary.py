@@ -3,8 +3,8 @@ import os
 import glob
 
 # 输入和输出文件夹路径
-input_folder = 'D:\github\Online_Tournament\photo\\big_huan\\left_input'
-output_folder = 'D:\github\Online_Tournament\photo\\big_huan\\left_output'
+input_folder = 'C:\\Users\\admin\\Desktop\\BigIs\\resizeRGB_photo'
+output_folder = 'C:\\Users\\admin\\Desktop\\BigIs\\output'
 
 # 确保输出文件夹存在，如果不存在则创建
 if not os.path.exists(output_folder):
@@ -17,6 +17,11 @@ for image_file in image_files:
     # 读取图像
     img = cv2.imread(image_file, cv2.IMREAD_GRAYSCALE)
 
+    # 检查图像是否正确加载
+    if img is None:
+        print(f"图像加载失败: {image_file}")
+        continue
+
     # 二值化处理
     _, binary_img = cv2.threshold(img, 100, 255, cv2.THRESH_BINARY)
 
@@ -25,6 +30,8 @@ for image_file in image_files:
     output_path = os.path.join(output_folder, file_name)
 
     # 保存二值化后的图像
-    cv2.imwrite(output_path, binary_img)
+    success = cv2.imwrite(output_path, binary_img)
+    if not success:
+        print(f"二值化图像保存失败: {output_path}")
 
 print('所有图像已处理并保存至', output_folder)

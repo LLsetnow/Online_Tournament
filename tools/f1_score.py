@@ -9,6 +9,7 @@ import sys
 sys.path.append('D:\github\Online_Tournament\submission\PaddleDetection')
 import json
 import yaml
+import shutil
 from functools import reduce
 import multiprocessing
 
@@ -180,39 +181,82 @@ class Detector(object):
         return dict(boxes=np_boxes, boxes_num=np_boxes_num)
 
 # 阈值字典
-# def set_threshold_list():
-#     return {
-#         'bomb': 0.18,
-#         'bridge': 0.21,
-#         'safety': 0.42,
-#         'cone': 0.37,
-#         'crosswalk': 0.22,
-#         'danger': 0.30,
-#         'evil': 0.35,
-#         'block': 0.18,
-#         'patient': 0.35,
-#         'prop': 0.49,
-#         'spy': 0.17,
-#         'thief': 0.23,
-#         'tumble': 0.43
-#     }
 
+# A1
 def set_threshold_list():
     return {
-        'bomb': 0.5,
-        'bridge': 0.5,
-        'safety': 0.5,
-        'cone': 0.5,
-        'crosswalk': 0.5,
-        'danger': 0.5,
-        'evil': 0.5,
-        'block': 0.5,
-        'patient': 0.5,
-        'prop': 0.5,
-        'spy': 0.5,
-        'thief': 0.5,
-        'tumble': 0.5
+        'bomb': 0.61,
+        'bridge': 0.51,
+        'safety': 0.47,
+        'cone': 0.64,       #
+        'crosswalk': 0.51,
+        'danger': 0.42,
+        'evil': 0.51,
+        'block': 0.49,
+        'patient': 0.46,    #
+        'prop': 0.49,
+        'spy': 0.53,
+        'thief': 0.53,
+        'tumble': 0.53      #
     }
+
+# A2
+# def set_threshold_list():
+#     return {
+#         'bomb': 0.63,
+#         'bridge': 0.48,
+#         'safety': 0.52,
+#         'cone': 0.65,
+#         'crosswalk': 0.51,
+#         'danger': 0.42,
+#         'evil': 0.51,
+#         'block': 0.49,
+#         'patient': 0.46,
+#         'prop': 0.49,
+#         'spy': 0.53,
+#         'thief': 0.53,
+#         'tumble': 0.08
+# }
+
+
+
+# def set_threshold_list():
+#     return {
+#         "bomb": 0.50,
+#         "bridge": 0.50,
+#         "safety": 0.50,
+#         "cone": 0.50,
+#         "crosswalk": 0.50,
+#         "danger": 0.50,
+#         "evil": 0.50,
+#         "block": 0.50,
+#         "patient": 0.50,
+#         "prop": 0.50,
+#         "spy": 0.50,
+#         "thief": 0.50,
+#         "tumble": 0.50
+#     }
+
+
+# def set_threshold_list():
+#     return {
+#         "bomb": 0.60,
+#         "bridge": 0.60,
+#         "safety": 0.60,
+#         "cone": 0.60,
+#         "crosswalk": 0.60,
+#         "danger": 0.60,
+#         "evil": 0.60,
+#         "block": 0.60,
+#         "patient": 0.60,
+#         "prop": 0.60,
+#         "spy": 0.60,
+#         "thief": 0.60,
+#         "tumble": 0.60
+#     }
+
+
+
 
 # 计数字典
 def set_number_list():
@@ -431,7 +475,9 @@ def predict_image(detector, image_list, result_path, annotations_path, det_model
     number_list = set_number_list()
 
     cone_state = 0
-    for index in range(len(image_list)):
+    total_images = len(image_list)
+
+    for index in range(total_images):
         # 检测模型图像预处理
         input_im_lst = []
         input_im_info_lst = []
@@ -455,7 +501,13 @@ def predict_image(detector, image_list, result_path, annotations_path, det_model
         img_predict = cv2.imread(image_list[index])
         img_datast = cv2.imread(image_list[index])
 
-        print(f"处理图像{image_id}  {index}/{len(image_list)}")
+        image_num = index + 1
+        block_num = 50
+        tmp = "█" * int(image_num / total_images * block_num)  # 下载完成后共显示50个█
+        # 生成print输出的字符串，显示特定长度，如果修改了上面显示的50个，相应的增加或者减小55即可
+        temp_txt = "评估测试集图像中" + tmp + "%*.*s" % (block_num + 5 - len(tmp), 5, str(int(image_num / total_images * 100)).rjust(5)) + "%    " + str(image_num) + '/' + str(total_images)
+        print('\r', end='\r')
+        print(temp_txt, end='')
 
 
         if im_bboxes_num > 0:
@@ -579,6 +631,24 @@ def predict_image(detector, image_list, result_path, annotations_path, det_model
     with open(number_list_path, 'w') as ft:
         json.dump(number_list, ft, indent=4)
 
+# 创建文件夹结构
+def create_directory_structure(det_model_path):
+    analyse_path = os.path.join(det_model_path, 'analyse')
+    images_path = os.path.join(analyse_path, 'images')
+    err_path = os.path.join(images_path, 'err')
+    ok_path = os.path.join(images_path, 'ok')
+
+    # 检查并删除已有的 analyse 文件夹
+    if os.path.exists(analyse_path):
+        shutil.rmtree(analyse_path)
+        print(f"已删除 {analyse_path} 文件夹")
+
+    # 创建新的文件夹结构
+    os.makedirs(err_path)
+    os.makedirs(ok_path)
+    print(f"已创建文件夹 {analyse_path}, {images_path}, {err_path}, 和 {ok_path}")
+
+
 def main(dataset_folder, item, result_path, det_model_path):
     pred_config = PredictConfig(det_model_path)
     detector = Detector(pred_config, det_model_path)
@@ -590,11 +660,8 @@ def main(dataset_folder, item, result_path, det_model_path):
 
 if __name__ == '__main__':
     start_time = time.time()
-    # det_model_path = "D:\github\Online_Tournament\model\model97178_yolov3_mobilenet_v1_ssld_270e_voc"
 
     paddle.enable_static()
-    # infer_txt = sys.argv[1]
-    # result_path = sys.argv[2]
 
     # 创建 ArgumentParser 对象
     parser = argparse.ArgumentParser(description='Process some location')
@@ -611,10 +678,17 @@ if __name__ == '__main__':
     dataset_folder = args.dataset
     result_path = args.output
 
+    # 新建文件夹结构
+    create_directory_structure(det_model_path)
 
-    # dataset_folder = "D:\github\Online_Tournament\my_dataset\\v2"
-    # result_path = "D:\github\Online_Tournament\model\model97178_yolov3_mobilenet_v1_ssld_270e_voc\F1_Score.json"
+    # 图片数量
+    imageFolder = os.path.join(dataset_folder, 'images')
+    images = [f for f in os.listdir(imageFolder) if f.endswith('.jpg')]
+    imageNum = len(images)
 
     main(dataset_folder, 'all', result_path, det_model_path)
     print(f'已将f1_ccore得分保存至{result_path}')
     print('total time:', time.time() - start_time)
+    FPS = imageNum / (time.time() - start_time)
+
+    print(f"FPS: {FPS}")

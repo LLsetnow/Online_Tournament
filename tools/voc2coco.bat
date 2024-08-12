@@ -1,5 +1,6 @@
 @echo
-SET dataset=good_v2
+SET dataset=good_v10
+
 call E:\anaconda3\Scripts\activate.bat E:\anaconda3\envs\paddle_11.2
 cd/d D:\github\Online_Tournament\PaddleDetection-2.5
 python tools/x2coco.py ^

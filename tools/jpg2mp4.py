@@ -1,19 +1,23 @@
-# 将图片集转视频，用于capture类
-
 import cv2
 import glob
 import os
+import re
 
 # 设置你的图片所在的文件夹路径
-folder_path = 'D:\\github\\Online_Tournament\\my_dataset\\v1\\images'  # 替换为你的文件夹路径
+folder_path = 'D:\github\Online_Tournament\photo\\bomb0809\yuan_photo'  # 替换为你的文件夹路径
 # 设置输出视频的路径
-output_video_path = 'D:\\github\\Online_Tournament\\photo\\videos\\output_video4.mp4'
+output_video_path = 'D:\github\Online_Tournament\photo\\videos\\bombmeilaxian.mp4'
 
 # 获取文件夹内所有的.JPG文件
 image_files = glob.glob(os.path.join(folder_path, '*.JPG'))
 
-# 根据文件名排序（确保是从1.jpg开始）
-# image_files.sort(key=lambda x: int(os.path.splitext(os.path.basename(x))[0]))
+# 定义一个函数从文件名中提取数字
+def extract_number(filename):
+    match = re.search(r'(\d+)', filename)
+    return int(match.group(1)) if match else 0
+
+# 根据文件名中的数字进行排序
+image_files.sort(key=lambda x: extract_number(os.path.basename(x)))
 
 # 读取第一张图片来获取视频的分辨率
 frame = cv2.imread(image_files[0])
